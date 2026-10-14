@@ -37,11 +37,19 @@
     };
     const $ = (id) => document.getElementById(id);
 
+    // Rejection sampling: descarta valores por encima del mayor múltiplo de n para evitar sesgo de módulo
+    function randomIndex(n) {
+      const limit = Math.floor(2 ** 32 / n) * n;
+      const buf = new Uint32Array(1);
+      do { crypto.getRandomValues(buf); } while (buf[0] >= limit);
+      return buf[0] % n;
+    }
+
     function generate() {
       const chars = Object.keys(SETS).filter((k) => $(k).checked).map((k) => SETS[k]).join('');
       if (!chars) { $('result').textContent = 'Elige al menos un tipo de carácter'; return; }
-      const values = crypto.getRandomValues(new Uint32Array(+$('length').value));
-      $('result').textContent = Array.from(values, (v) => chars[v % chars.length]).join('');
+      const length = +$('length').value;
+      $('result').textContent = Array.from({ length }, () => chars[randomIndex(chars.length)]).join('');
     }
 
     $('length').addEventListener('input', (e) => { $('lengthValue').textContent = e.target.value; generate(); });
