@@ -47,7 +47,11 @@
     $('length').addEventListener('input', (e) => { $('lengthValue').textContent = e.target.value; generate(); });
     document.querySelectorAll('input[type=checkbox]').forEach((el) => el.addEventListener('change', generate));
     $('generate').addEventListener('click', generate);
-    $('copy').addEventListener('click', () => navigator.clipboard.writeText($('result').textContent));
+    $('copy').addEventListener('click', async () => {
+      await navigator.clipboard.writeText($('result').textContent);
+      $('copy').textContent = 'Copiado ✓';
+      setTimeout(() => { $('copy').textContent = 'Copiar'; }, 1500);
+    });
     generate();
   </script>
 </body>
